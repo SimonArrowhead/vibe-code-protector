@@ -3,7 +3,7 @@ const vscode = require('vscode');
 const { scanDocument } = require('../../src/services/scanService');
 const { sanitizeDocument } = require('../../src/services/sanitizeService');
 const { createDiagnostic } = require('../../src/utils/diagnostics');
-const { ZERO_WIDTH, RTL_OVERRIDE, PROMPT_INJECTION, HOMOGLYPHS } = require('../../src/utils/patterns');
+const { ZERO_WIDTH, RTL_OVERRIDE, HOMOGLYPHS } = require('../../src/utils/patterns');
 
 suite('Vibe Code Protector Extension Tests', () => {
   

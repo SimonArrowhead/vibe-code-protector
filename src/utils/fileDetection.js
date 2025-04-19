@@ -1,6 +1,6 @@
 function isAiInstructionFile(fileName) {
   const lowerCaseFileName = fileName.toLowerCase();
-  return lowerCaseFileName.includes('ai') && 
+  return lowerCaseFileName.includes('ai') || 
          (lowerCaseFileName.includes('instruction') || 
           lowerCaseFileName.includes('prompt') || 
           lowerCaseFileName.endsWith('.md') || 

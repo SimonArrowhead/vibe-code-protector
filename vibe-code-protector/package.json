@@ -4,6 +4,10 @@
   "description": "A Visual Studio Code extension for scanning documents for AI instruction security issues.",
   "version": "0.1.0",
   "publisher": "your-name",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SimonArrowhead/vibe-code-protector.git"
+  },
   "engines": {
     "vscode": "^1.60.0"
   },

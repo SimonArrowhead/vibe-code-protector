@@ -1,8 +1,8 @@
 const vscode = require('vscode');
-const { PATTERNS } = require('../utils/patterns');
-const { createDiagnostic } = require('../utils/diagnostics');
+const PATTERNS = require('../utils/patterns');
+const { createDiagnostic, updateDiagnostics } = require('../utils/diagnostics');
 
-function scanDocument(document) {
+function scanDocument(document, diagnosticCollection) {
   const text = document.getText();
   const diagnostics = [];
 
@@ -30,7 +30,7 @@ function scanDocument(document) {
     const endPos = document.positionAt(match.index + match[0].length);
     diagnostics.push(createDiagnostic(startPos, endPos, 'Potential homoglyph detected.'));
   }
-
+  updateDiagnostics(diagnosticCollection, document, diagnostics)
   return diagnostics;
 }
 

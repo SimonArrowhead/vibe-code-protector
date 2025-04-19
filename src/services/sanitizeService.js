@@ -1,4 +1,5 @@
 const PATTERNS = require('../utils/patterns');
+const vscode = require('vscode');
 
 async function sanitizeDocument(editor) {
   if (!editor) return;

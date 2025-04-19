@@ -26,6 +26,13 @@ function activate(context) {
     })
   );
 
+  function scanCurrentDocument() {
+    const editor = vscode.window.activeTextEditor;
+    if (editor) {
+      scanDocument(editor.document, diagnosticCollection);
+    }
+  }
+
   context.subscriptions.push(
     vscode.workspace.onDidSaveTextDocument(document => {
       if (isAiInstructionFile(document)) {

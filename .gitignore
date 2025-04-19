@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build output
+out/
+dist/
+*.vsix
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Editor files
+.vscode-test/
+.DS_Store
+
+# OS specific files
+Thumbs.db
+desktop.ini
+
+# Test-related files
+coverage/
+.nyc_output/
+
+# Packaging
+*.tgz
+*.zip
+*.tar.gz
+
+# Local environment
+.env
+.env.local

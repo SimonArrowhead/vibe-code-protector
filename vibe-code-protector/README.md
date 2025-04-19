@@ -11,7 +11,7 @@ Vibe Code Protector is a Visual Studio Code extension designed to enhance the se
 ## Installation
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/vibe-code-protector.git
+   git clone https://github.com/SimonArrowhead/vibe-code-protector.git
    ```
 2. Navigate to the project directory:
    ```
@@ -29,7 +29,23 @@ Vibe Code Protector is a Visual Studio Code extension designed to enhance the se
   - **Sanitize Document**: `aiInstructionSecurity.sanitize` - Sanitizes the current document by removing problematic characters.
 
 ## Configuration
-You can configure the extension settings in your `settings.json` file. For example, you can enable or disable auto-scanning when documents are opened.
+
+You can configure Vibe Code Protector through VS Code settings:
+
+1. Open VS Code Settings (File > Preferences > Settings or press `Ctrl+,`)
+2. Search for "Vibe Code Protector" or "AI Instruction Security"
+3. Adjust the following settings:
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| `aiInstructionSecurity.autoScan` | Automatically scan documents for security issues when opened or saved | `true` |
+
+Alternatively, you can manually edit your `settings.json` file by adding:
+
+```json
+{
+  "aiInstructionSecurity.autoScan": true
+}
 
 ## Contributing
 Contributions are welcome! Please open an issue or submit a pull request for any enhancements or bug fixes.

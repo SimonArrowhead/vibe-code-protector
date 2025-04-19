@@ -1,0 +1,17 @@
+# .vscodeignore
+
+.vscode/
+node_modules/
+npm-debug.log
+package-lock.json
+*.tgz
+*.zip
+*.tar.gz
+*.log
+*.md
+test/
+src/**/*.test.js
+src/**/*.spec.js
+src/utils/*.js
+src/services/*.js
+src/extension.js

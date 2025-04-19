@@ -1,0 +1,37 @@
+{
+  "name": "ai-instruction-security",
+  "displayName": "AI Instruction Security",
+  "description": "Detects hidden characters and potential attacks in AI instruction files",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": ["Security"],
+  "activationEvents": [
+    "onLanguage:markdown",
+    "onLanguage:plaintext"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "aiInstructionSecurity.scan",
+        "title": "Scan for Hidden Characters"
+      },
+      {
+        "command": "aiInstructionSecurity.sanitize",
+        "title": "Sanitize AI Instruction File"
+      }
+    ],
+    "configuration": {
+      "title": "AI Instruction Security",
+      "properties": {
+        "aiInstructionSecurity.autoScan": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically scan files when opened"
+        }
+      }
+    }
+  }
+}

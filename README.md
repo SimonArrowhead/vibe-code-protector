@@ -1,51 +1,88 @@
-# Vibe Code Protector
+Vibe Code Protector
 
 ## Overview
-Vibe Code Protector is a Visual Studio Code extension designed to enhance the security of AI instruction files by scanning for potential security issues. It detects problematic content such as zero-width characters, right-to-left overrides, prompt injection patterns, and homoglyphs.
+Vibe Code Protector is a Visual Studio Code extension designed to enhance the security of AI instruction files by detecting and preventing potential security issues. It identifies problematic content such as zero-width characters, right-to-left overrides, prompt injection patterns, homoglyphs, and various malicious content patterns.
 
 ## Features
-- **Scan Documents**: Automatically scan documents for AI instruction security issues upon opening or saving.
-- **Sanitize Documents**: Remove problematic characters from documents to ensure clean and secure content.
-- **Diagnostic Messages**: Provides clear diagnostic messages for detected issues, helping users understand and resolve potential vulnerabilities.
+- **Smart Document Scanning**: Automatically scans documents for AI instruction security issues upon opening or saving
+- **Multi-Level Sanitization**: 
+  - Basic sanitization for quick cleanup
+  - Selective sanitization allowing you to choose which elements to remove
+  - Custom pattern management for prompt injection detection
+- **Comprehensive Detection**:
+  - Zero-width and invisible characters
+  - Right-to-left override characters
+  - Homoglyphs (Cyrillic characters that look like Latin)
+  - Private Use Area Unicode characters
+  - Over 30 prompt injection patterns
+  - Unicode Tags and surrogate pairs
+  - Harmful content patterns
+  - Base64 encoded instructions
 
 ## Installation
-1. Clone the repository:
-   ```
-   git clone https://github.com/SimonArrowhead/vibe-code-protector.git
-   ```
-2. Navigate to the project directory:
-   ```
-   cd vibe-code-protector
-   ```
-3. Install dependencies:
-   ```
-   npm install
-   ```
-4. Open the project in Visual Studio Code.
+1. Open VS Code
+2. Go to Extensions (Ctrl+Shift+X)
+3. Search for "Vibe Code Protector"
+4. Click Install
 
 ## Usage
-- Use the command palette (Ctrl+Shift+P) to access the following commands:
-  - **Scan Document**: `aiInstructionSecurity.scan` - Scans the current document for security issues.
-  - **Sanitize Document**: `aiInstructionSecurity.sanitize` - Sanitizes the current document by removing problematic characters.
+### Commands
+Access these commands via the Command Palette (Ctrl+Shift+P):
+- `VCP: Scan for Security Issues` - Scans current document for security issues
+- `VCP: Sanitize Document` - Removes all detected security issues
+- `VCP: Selective Sanitize` - Choose which types of issues to remove
+- `VCP: Manage Custom Patterns` - Add/remove custom prompt injection patterns
+- `VCP: Open Settings` - Configure extension settings
 
-## Configuration
+### Context Menu
+Right-click in the editor to access:
+- Scan for Security Issues
+- Sanitize Document
+- Selective Sanitize
 
-You can configure Vibe Code Protector through VS Code settings:
+These commands appear in their own "Vibe Code Protector" section in the context menu.
 
-1. Open VS Code Settings (File > Preferences > Settings or press `Ctrl+,`)
-2. Search for "Vibe Code Protector" or "AI Instruction Security"
-3. Adjust the following settings:
-
-| Setting | Description | Default |
-|---------|-------------|---------|
-| `aiInstructionSecurity.autoScan` | Automatically scan documents for security issues when opened or saved | `true` |
-
-Alternatively, you can manually edit your `settings.json` file by adding:
-
+### Basic Settings
 ```json
 {
-  "aiInstructionSecurity.autoScan": true
+  "aiInstructionSecurity.autoScan": true,
+  "aiInstructionSecurity.detection.zeroWidth": true,
+  "aiInstructionSecurity.detection.rtlOverride": true,
+  "aiInstructionSecurity.detection.homoglyphs": true,
+  "aiInstructionSecurity.detection.invisibleChars": true,
+  "aiInstructionSecurity.detection.privateUseArea": true,
+  "aiInstructionSecurity.detection.promptInjection": true
 }
+```
+### Custom Prompt Injection Patterns
+Add your own patterns to detect specific threats:
+```json
+{
+  "aiInstructionSecurity.promptInjection.customPatterns": [
+    "bypass .*? filters",
+    "disregard your programming",
+    "exit (this |your |the )?role"
+  ]
+}
+```
+### Detection Categories
+- **Invisible Characters**: Zero-width spaces, RTL overrides, Unicode Tags
+- **Homoglyphs**: Cyrillic characters that look like Latin letters
+- **Prompt Injection**:
+   - Basic override attempts
+   - Role manipulation
+   - DAN and jailbreak attempts
+   - Token manipulation
+   - Hypothetical scenarios
+   - Authority impersonation
+   - Two-stage attacks
+   - Format manipulation
+   - Emotional manipulation
+- **Harmful Content**:
+   - Direct harmful instructions
+   - Malicious code requests
+   - Rule-breaking attempts
+   - Base64 encoded instructions
 
 ## Contributing
 Contributions are welcome! Please open an issue or submit a pull request for any enhancements or bug fixes.

@@ -1,4 +1,4 @@
-Vibe Code Protector
+# Vibe Code Protector
 
 ## Overview
 Vibe Code Protector is a Visual Studio Code extension designed to enhance the security of AI instruction files by detecting and preventing potential security issues. It identifies problematic content such as zero-width characters, right-to-left overrides, prompt injection patterns, homoglyphs, and various malicious content patterns.
@@ -18,6 +18,11 @@ Vibe Code Protector is a Visual Studio Code extension designed to enhance the se
   - Unicode Tags and surrogate pairs
   - Harmful content patterns
   - Base64 encoded instructions
+- **File Monitoring**:
+  - Automatic monitoring of critical files like `.github/copilot-instructions.md`
+  - Custom file path monitoring (relative or absolute paths)
+  - Real-time scanning when monitored files change
+  - Notifications for security issues in monitored files
 
 ## Feedback and Notifications
 The extension provides helpful feedback throughout your workflow:
@@ -26,6 +31,7 @@ The extension provides helpful feedback throughout your workflow:
 - After scanning a document with no issues, a confirmation message appears
 - After sanitization, the document is automatically rescanned to verify all issues were fixed
 - Hover over detected issues for detailed information about the security concern
+- Notifications when monitored files are changed or contain security issues
 
 ## Installation
 1. Open VS Code
@@ -40,6 +46,8 @@ Access these commands via the Command Palette (Ctrl+Shift+P):
 - `VCP: Sanitize Document` - Removes all detected security issues
 - `VCP: Selective Sanitize` - Choose which types of issues to remove
 - `VCP: Manage Custom Patterns` - Add/remove custom prompt injection patterns
+- `VCP: Configure Monitored Files` - Add/remove files to monitor for security issues
+- `VCP: View Monitored Files Settings` - Opens settings focused on monitored files
 - `VCP: Open Settings` - Configure extension settings
 
 ### Context Menu
@@ -62,6 +70,16 @@ These commands appear in their own "Vibe Code Protector" section in the context 
   "vibeCodeProtector.detection.promptInjection": true
 }
 ```
+
+### File Monitoring Settings
+```json
+{
+  "vibeCodeProtector.monitoredFiles": [".github/copilot-instructions.md"],
+  "vibeCodeProtector.monitoredFilesEnabled": true,
+  "vibeCodeProtector.monitoredFilesNotifications": true
+}
+```
+
 ### Custom Prompt Injection Patterns
 Add your own patterns to detect specific threats:
 ```json

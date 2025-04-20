@@ -25,3 +25,17 @@
 ### Fixed
 - Prevented "No security issues detected" message from appearing after sanitization
 - Fixed several minor bugs in pattern detection
+
+## [0.2.0] - 2025-04-20
+### Added
+- File monitoring system for critical AI instruction files
+- Support for workspace-relative and absolute file paths in monitoring
+- `VCP: Configure Monitored Files` command to add/remove monitored files
+- `VCP: View Monitored Files Settings` command for quick settings access
+- Real-time scanning of monitored files when they change
+- Notifications for security issues in monitored files
+
+### Fixed
+- Corrected extension namespace from 'aiInstructionSecurity' to 'vibeCodeProtector'
+- Improved file detection and scanning reliability
+- Better handling of configuration changes

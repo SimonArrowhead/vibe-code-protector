@@ -19,6 +19,14 @@ Vibe Code Protector is a Visual Studio Code extension designed to enhance the se
   - Harmful content patterns
   - Base64 encoded instructions
 
+## Feedback and Notifications
+The extension provides helpful feedback throughout your workflow:
+
+- When issues are detected, they appear as warnings or errors in your document
+- After scanning a document with no issues, a confirmation message appears
+- After sanitization, the document is automatically rescanned to verify all issues were fixed
+- Hover over detected issues for detailed information about the security concern
+
 ## Installation
 1. Open VS Code
 2. Go to Extensions (Ctrl+Shift+X)

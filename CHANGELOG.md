@@ -16,3 +16,12 @@
 - Moved test files to the test directory
 - Renamed commands to use "VCP:" prefix for better identification
 - Added context menu integration with a dedicated "Vibe Code Protector" section
+
+## [0.1.2] - 2025-04-20
+### Added
+- Added confirmation message when no security issues are detected
+- Improved user feedback after scanning and sanitization operations
+
+### Fixed
+- Prevented "No security issues detected" message from appearing after sanitization
+- Fixed several minor bugs in pattern detection

@@ -12,6 +12,9 @@
     "vscode": "^1.60.0"
   },
   "activationEvents": [
+    "onStartupFinished",
+    "onFileSystem:file",
+    "onView:explorer",
     "onDidOpenTextDocument",
     "onDidSaveTextDocument"
   ],
@@ -24,107 +27,115 @@
   "contributes": {
     "commands": [
       {
-        "command": "aiInstructionSecurity.scan",
+        "command": "vibeCodeProtector.scan",
         "title": "VCP: Scan for Security Issues"
       },
       {
-        "command": "aiInstructionSecurity.sanitize",
+        "command": "vibeCodeProtector.sanitize",
         "title": "VCP: Sanitize Document"
       },
       {
-        "command": "aiInstructionSecurity.selectiveSanitize",
+        "command": "vibeCodeProtector.selectiveSanitize",
         "title": "VCP: Selective Sanitize"
       },
       {
-        "command": "aiInstructionSecurity.openSettings",
+        "command": "vibeCodeProtector.openSettings",
         "title": "VCP: Open Settings"
       },
       {
-        "command": "aiInstructionSecurity.manageCustomPatterns",
+        "command": "vibeCodeProtector.manageCustomPatterns",
         "title": "VCP: Manage Custom Patterns"
+      },
+      {
+        "command": "vibeCodeProtector.openMonitoredFilesSettings",
+        "title": "VCP: View Monitored Files Settings"
       }
     ],
     "menus": {
       "editor/context": [
         {
           "when": "editorFocus",
-          "command": "aiInstructionSecurity.scan",
+          "command": "vibeCodeProtector.scan",
           "group": "VibeCodeProtector@1"
         },
         {
           "when": "editorFocus",
-          "command": "aiInstructionSecurity.sanitize",
+          "command": "vibeCodeProtector.sanitize",
           "group": "VibeCodeProtector@2"
         },
         {
           "when": "editorFocus",
-          "command": "aiInstructionSecurity.selectiveSanitize",
+          "command": "vibeCodeProtector.selectiveSanitize",
           "group": "VibeCodeProtector@3"
         }
       ],
       "commandPalette": [
         {
-          "command": "aiInstructionSecurity.scan",
+          "command": "vibeCodeProtector.scan",
           "when": "editorIsOpen"
         },
         {
-          "command": "aiInstructionSecurity.sanitize",
+          "command": "vibeCodeProtector.sanitize",
           "when": "editorIsOpen"
         },
         {
-          "command": "aiInstructionSecurity.selectiveSanitize",
+          "command": "vibeCodeProtector.selectiveSanitize",
           "when": "editorIsOpen"
         },
         {
-          "command": "aiInstructionSecurity.openSettings",
+          "command": "vibeCodeProtector.openSettings",
           "when": "editorIsOpen"
         },
         {
-          "command": "aiInstructionSecurity.manageCustomPatterns",
+          "command": "vibeCodeProtector.manageCustomPatterns",
           "when": "editorIsOpen"
+        },
+        {
+          "command": "vibeCodeProtector.openMonitoredFilesSettings",
+          "when": "true"
         }
       ]
     },
     "configuration": {
       "type": "object",
-      "title": "AI Instruction Security",
+      "title": "Vibe Code Protector",
       "properties": {
-        "aiInstructionSecurity.autoScan": {
+        "vibeCodeProtector.autoScan": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically scan documents for AI instruction security issues on open and save."
+          "description": "Automatically scan documents for security issues on open and save."
         },
-        "aiInstructionSecurity.detection.zeroWidth": {
+        "vibeCodeProtector.detection.zeroWidth": {
           "type": "boolean",
           "default": true,
           "description": "Detect zero-width characters."
         },
-        "aiInstructionSecurity.detection.rtlOverride": {
+        "vibeCodeProtector.detection.rtlOverride": {
           "type": "boolean",
           "default": true,
           "description": "Detect right-to-left override characters."
         },
-        "aiInstructionSecurity.detection.homoglyphs": {
+        "vibeCodeProtector.detection.homoglyphs": {
           "type": "boolean",
           "default": true,
           "description": "Detect homoglyphs (e.g. Cyrillic characters that look like Latin)."
         },
-        "aiInstructionSecurity.detection.invisibleChars": {
+        "vibeCodeProtector.detection.invisibleChars": {
           "type": "boolean",
           "default": true,
           "description": "Detect invisible characters and Unicode Tags."
         },
-        "aiInstructionSecurity.detection.privateUseArea": {
+        "vibeCodeProtector.detection.privateUseArea": {
           "type": "boolean",
           "default": true,
           "description": "Detect Private Use Area Unicode characters."
         },
-        "aiInstructionSecurity.detection.promptInjection": {
+        "vibeCodeProtector.detection.promptInjection": {
           "type": "boolean",
           "default": true,
           "description": "Detect prompt injection patterns."
         },
-        "aiInstructionSecurity.sanitization.defaultRemove": {
+        "vibeCodeProtector.sanitization.defaultRemove": {
           "type": "array",
           "default": ["zeroWidth", "rtlOverride", "homoglyphs", "invisibleChars", "privateUseArea", "promptInjection"],
           "description": "Default items to remove when using the Sanitize Document command.",
@@ -140,10 +151,29 @@
             ]
           }
         },
-        "aiInstructionSecurity.promptInjection.customPatterns": {
+        "vibeCodeProtector.promptInjection.customPatterns": {
           "type": "array",
           "default": [],
           "description": "Custom regex patterns to detect prompt injection (in string format)."
+        },
+        "vibeCodeProtector.monitoredFiles": {
+          "type": "array",
+          "default": [".github/copilot-instructions.md"],
+          "description": "Files to specifically monitor for security issues. Use relative paths from workspace root.",
+          "items": {
+            "type": "string"
+          },
+          "scope": "resource"
+        },
+        "vibeCodeProtector.monitoredFilesEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable special monitoring for critical files."
+        },
+        "vibeCodeProtector.monitoredFilesNotifications": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show notifications when monitored files are modified."
         }
       }
     }

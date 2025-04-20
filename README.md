@@ -53,20 +53,20 @@ These commands appear in their own "Vibe Code Protector" section in the context 
 ### Basic Settings
 ```json
 {
-  "aiInstructionSecurity.autoScan": true,
-  "aiInstructionSecurity.detection.zeroWidth": true,
-  "aiInstructionSecurity.detection.rtlOverride": true,
-  "aiInstructionSecurity.detection.homoglyphs": true,
-  "aiInstructionSecurity.detection.invisibleChars": true,
-  "aiInstructionSecurity.detection.privateUseArea": true,
-  "aiInstructionSecurity.detection.promptInjection": true
+  "vibeCodeProtector.autoScan": true,
+  "vibeCodeProtector.detection.zeroWidth": true,
+  "vibeCodeProtector.detection.rtlOverride": true,
+  "vibeCodeProtector.detection.homoglyphs": true,
+  "vibeCodeProtector.detection.invisibleChars": true,
+  "vibeCodeProtector.detection.privateUseArea": true,
+  "vibeCodeProtector.detection.promptInjection": true
 }
 ```
 ### Custom Prompt Injection Patterns
 Add your own patterns to detect specific threats:
 ```json
 {
-  "aiInstructionSecurity.promptInjection.customPatterns": [
+  "vibeCodeProtector.promptInjection.customPatterns": [
     "bypass .*? filters",
     "disregard your programming",
     "exit (this |your |the )?role"

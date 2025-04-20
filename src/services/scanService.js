@@ -3,7 +3,7 @@ const PATTERNS = require('../utils/patterns');
 const { createDiagnostic, updateDiagnostics } = require('../utils/diagnostics');
 
 function scanDocument(document, diagnosticCollection, afterSanitization = false) {
-  const config = vscode.workspace.getConfiguration('aiInstructionSecurity');
+  const config = vscode.workspace.getConfiguration('vibeCodeProtector');
   const text = document.getText();
   const diagnostics = [];
   

@@ -1,6 +1,6 @@
 const vscode = require('vscode');
 
-function createDiagnostic(startPos, endPos, message, severity = vscode.DiagnosticSeverity.Warning, source = 'AI Instruction Security', code = null) {
+function createDiagnostic(startPos, endPos, message, severity = vscode.DiagnosticSeverity.Warning, source = 'Vibe Code Protector', code = null) {
   const range = new vscode.Range(startPos, endPos);
   const diagnostic = new vscode.Diagnostic(range, message, severity);
   diagnostic.source = source;

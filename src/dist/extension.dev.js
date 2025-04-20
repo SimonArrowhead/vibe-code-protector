@@ -20,25 +20,40 @@ var _require2 = require('./services/sanitizeService'),
 var _require3 = require('./utils/fileDetection'),
     isAiInstructionFile = _require3.isAiInstructionFile;
 
-var diagnosticCollection = vscode.languages.createDiagnosticCollection('aiInstructionSecurity');
+var _require4 = require('./services/fileMonitorService'),
+    FileMonitorService = _require4.FileMonitorService;
+
+var diagnosticCollection = vscode.languages.createDiagnosticCollection('vibeCodeProtector');
 
 function activate(context) {
-  context.subscriptions.push(diagnosticCollection); // Register commands
+  // Create dedicated output channel for monitoring activity
+  var monitorOutput = vscode.window.createOutputChannel('VCP Monitor');
+  monitorOutput.show();
+  monitorOutput.appendLine('Vibe Code Protector activated');
+  context.subscriptions.push(diagnosticCollection); // Pass output channel to file monitor service
 
-  var scanCommand = vscode.commands.registerCommand('aiInstructionSecurity.scan', function () {
+  var fileMonitorService = new FileMonitorService(context, diagnosticCollection, monitorOutput);
+  context.subscriptions.push(fileMonitorService); // Force an immediate scan of all monitored files after a short delay
+
+  setTimeout(function () {
+    monitorOutput.appendLine("Running initial scan of monitored files...");
+    fileMonitorService.updateMonitoredFiles();
+  }, 2000); // Register commands
+
+  var scanCommand = vscode.commands.registerCommand('vibeCodeProtector.scan', function () {
     scanCurrentDocument();
   });
   context.subscriptions.push(scanCommand);
-  var sanitizeCommand = vscode.commands.registerCommand('aiInstructionSecurity.sanitize', function () {
+  var sanitizeCommand = vscode.commands.registerCommand('vibeCodeProtector.sanitize', function () {
     sanitizeCurrentDocument();
   });
   context.subscriptions.push(sanitizeCommand); // Move this outside the other command function
 
-  var settingsCommand = vscode.commands.registerCommand('aiInstructionSecurity.openSettings', function () {
-    vscode.commands.executeCommand('workbench.action.openSettings', 'aiInstructionSecurity');
+  var settingsCommand = vscode.commands.registerCommand('vibeCodeProtector.openSettings', function () {
+    vscode.commands.executeCommand('workbench.action.openSettings', 'vibeCodeProtector');
   });
   context.subscriptions.push(settingsCommand);
-  var selectiveSanitizeCommand = vscode.commands.registerCommand('aiInstructionSecurity.selectiveSanitize', function _callee() {
+  var selectiveSanitizeCommand = vscode.commands.registerCommand('vibeCodeProtector.selectiveSanitize', function _callee() {
     var editor, options, selected, sanitizeOptions;
     return regeneratorRuntime.async(function _callee$(_context) {
       while (1) {
@@ -97,13 +112,13 @@ function activate(context) {
     });
   });
   context.subscriptions.push(selectiveSanitizeCommand);
-  var manageCustomPatternsCommand = vscode.commands.registerCommand('aiInstructionSecurity.manageCustomPatterns', function _callee2() {
+  var manageCustomPatternsCommand = vscode.commands.registerCommand('vibeCodeProtector.manageCustomPatterns', function _callee2() {
     var config, customPatterns, options, selected, pattern, examplePatterns, patternToRemove;
     return regeneratorRuntime.async(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            config = vscode.workspace.getConfiguration('aiInstructionSecurity');
+            config = vscode.workspace.getConfiguration('vibeCodeProtector');
             customPatterns = config.get('promptInjection.customPatterns') || []; // Show current patterns and options
 
             options = ['➕ Add New Pattern'].concat(_toConsumableArray(customPatterns.map(function (pattern) {
@@ -211,9 +226,117 @@ function activate(context) {
     }, null, null, [[14, 22]]);
   });
   context.subscriptions.push(manageCustomPatternsCommand);
+  var configureMonitoredFilesCommand = vscode.commands.registerCommand('vibeCodeProtector.configureMonitoredFiles', function _callee3() {
+    var config, monitoredFiles, quickPickItems, selected, filePath, fileToRemove;
+    return regeneratorRuntime.async(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            config = vscode.workspace.getConfiguration('vibeCodeProtector');
+            monitoredFiles = config.get('monitoredFiles') || [".github/copilot-instructions.md"];
+            quickPickItems = [{
+              label: '➕ Add New Monitored File',
+              description: 'Specify a new file to monitor'
+            }, {
+              label: '🔄 Refresh Monitored Files',
+              description: 'Re-scan all monitored files now'
+            }].concat(_toConsumableArray(monitoredFiles.map(function (file) {
+              return {
+                label: file,
+                description: 'Click to remove from monitoring',
+                buttons: [{
+                  iconPath: new vscode.ThemeIcon('trash'),
+                  tooltip: 'Remove from monitoring'
+                }]
+              };
+            })));
+            _context3.next = 5;
+            return regeneratorRuntime.awrap(vscode.window.showQuickPick(quickPickItems, {
+              placeHolder: 'Configure monitored files (default: .github/copilot-instructions.md)',
+              matchOnDescription: true
+            }));
+
+          case 5:
+            selected = _context3.sent;
+
+            if (selected) {
+              _context3.next = 8;
+              break;
+            }
+
+            return _context3.abrupt("return");
+
+          case 8:
+            if (!(selected.label === '➕ Add New Monitored File')) {
+              _context3.next = 20;
+              break;
+            }
+
+            _context3.next = 11;
+            return regeneratorRuntime.awrap(vscode.window.showInputBox({
+              placeHolder: '.github/copilot-instructions.md or C:\\path\\to\\file.md',
+              prompt: 'Enter a path to monitor (workspace-relative or absolute)'
+            }));
+
+          case 11:
+            filePath = _context3.sent;
+
+            if (!filePath) {
+              _context3.next = 18;
+              break;
+            }
+
+            monitoredFiles.push(filePath);
+            _context3.next = 16;
+            return regeneratorRuntime.awrap(config.update('monitoredFiles', monitoredFiles, vscode.ConfigurationTarget.Global));
+
+          case 16:
+            vscode.window.showInformationMessage("Now monitoring: ".concat(filePath));
+            fileMonitorService.updateMonitoredFiles();
+
+          case 18:
+            _context3.next = 31;
+            break;
+
+          case 20:
+            if (!(selected.label === '🔄 Refresh Monitored Files')) {
+              _context3.next = 25;
+              break;
+            }
+
+            fileMonitorService.updateMonitoredFiles();
+            vscode.window.showInformationMessage('Refreshed all monitored files');
+            _context3.next = 31;
+            break;
+
+          case 25:
+            // Remove the selected file from monitoring
+            fileToRemove = selected.label;
+            monitoredFiles = monitoredFiles.filter(function (f) {
+              return f !== fileToRemove;
+            });
+            _context3.next = 29;
+            return regeneratorRuntime.awrap(config.update('monitoredFiles', monitoredFiles, vscode.ConfigurationTarget.Global));
+
+          case 29:
+            vscode.window.showInformationMessage("Stopped monitoring: ".concat(fileToRemove));
+            fileMonitorService.updateMonitoredFiles();
+
+          case 31:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    });
+  });
+  context.subscriptions.push(configureMonitoredFilesCommand);
+  var viewMonitoredFilesSettingsCommand = vscode.commands.registerCommand('vibeCodeProtector.openMonitoredFilesSettings', function () {
+    vscode.commands.executeCommand('workbench.action.openSettings', 'vibeCodeProtector.monitoredFiles');
+  });
+  context.subscriptions.push(viewMonitoredFilesSettingsCommand);
   context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(function (document) {
     try {
-      var config = vscode.workspace.getConfiguration('aiInstructionSecurity');
+      var config = vscode.workspace.getConfiguration('vibeCodeProtector');
 
       if (config.get('autoScan') && isAiInstructionFile(document.fileName)) {
         scanDocument(document, diagnosticCollection);
@@ -233,7 +356,7 @@ function activate(context) {
 
   context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(function (document) {
     try {
-      var config = vscode.workspace.getConfiguration('aiInstructionSecurity');
+      var config = vscode.workspace.getConfiguration('vibeCodeProtector');
 
       if (config.get('autoScan') && isAiInstructionFile(document.fileName)) {
         scanDocument(document, diagnosticCollection);
@@ -250,27 +373,27 @@ function deactivate() {
 
 function sanitizeCurrentDocument() {
   var editor;
-  return regeneratorRuntime.async(function sanitizeCurrentDocument$(_context3) {
+  return regeneratorRuntime.async(function sanitizeCurrentDocument$(_context4) {
     while (1) {
-      switch (_context3.prev = _context3.next) {
+      switch (_context4.prev = _context4.next) {
         case 0:
           editor = vscode.window.activeTextEditor;
 
           if (editor) {
-            _context3.next = 4;
+            _context4.next = 4;
             break;
           }
 
           vscode.window.showWarningMessage('No active editor found.');
-          return _context3.abrupt("return");
+          return _context4.abrupt("return");
 
         case 4:
-          _context3.next = 6;
+          _context4.next = 6;
           return regeneratorRuntime.awrap(sanitizeDocument(editor, diagnosticCollection));
 
         case 6:
         case "end":
-          return _context3.stop();
+          return _context4.stop();
       }
     }
   });

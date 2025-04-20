@@ -10,7 +10,7 @@ var _require = require('../utils/diagnostics'),
 
 function scanDocument(document, diagnosticCollection) {
   var afterSanitization = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-  var config = vscode.workspace.getConfiguration('aiInstructionSecurity');
+  var config = vscode.workspace.getConfiguration('vibeCodeProtector');
   var text = document.getText();
   var diagnostics = []; // Reset pattern indices
 

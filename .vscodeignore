@@ -12,3 +12,5 @@ package-lock.json
 test/
 src/**/*.test.js
 src/**/*.spec.js
+**/dist/
+**/*.dev.js

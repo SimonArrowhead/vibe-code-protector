@@ -21,48 +21,70 @@
     "color": "#2B5797",
     "theme": "dark"
   },
-  "menus": {
-    "editor/context": [
-      {
-        "when": "editorFocus",
-        "command": "aiInstructionSecurity.scan",
-        "group": "aiInstructionSecurity"
-      },
-      {
-        "when": "editorFocus",
-        "command": "aiInstructionSecurity.sanitize",
-        "group": "aiInstructionSecurity"
-      },
-      {
-        "when": "editorFocus",
-        "command": "aiInstructionSecurity.selectiveSanitize",
-        "group": "aiInstructionSecurity"
-      }
-    ]
-  },
   "contributes": {
     "commands": [
       {
         "command": "aiInstructionSecurity.scan",
-        "title": "Scan for AI Instruction Security Issues"
+        "title": "VCP: Scan for Security Issues"
       },
       {
         "command": "aiInstructionSecurity.sanitize",
-        "title": "Sanitize Document"
+        "title": "VCP: Sanitize Document"
       },
       {
         "command": "aiInstructionSecurity.selectiveSanitize",
-        "title": "Selective Sanitize Document"
+        "title": "VCP: Selective Sanitize"
       },
       {
         "command": "aiInstructionSecurity.openSettings",
-        "title": "Vibe Code Protector: Open Settings"
+        "title": "VCP: Open Settings"
       },
       {
         "command": "aiInstructionSecurity.manageCustomPatterns",
-        "title": "Vibe Code Protector: Manage Custom Prompt Injection Patterns"
+        "title": "VCP: Manage Custom Patterns"
       }
     ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "editorFocus",
+          "command": "aiInstructionSecurity.scan",
+          "group": "VibeCodeProtector@1"
+        },
+        {
+          "when": "editorFocus",
+          "command": "aiInstructionSecurity.sanitize",
+          "group": "VibeCodeProtector@2"
+        },
+        {
+          "when": "editorFocus",
+          "command": "aiInstructionSecurity.selectiveSanitize",
+          "group": "VibeCodeProtector@3"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "aiInstructionSecurity.scan",
+          "when": "editorIsOpen"
+        },
+        {
+          "command": "aiInstructionSecurity.sanitize",
+          "when": "editorIsOpen"
+        },
+        {
+          "command": "aiInstructionSecurity.selectiveSanitize",
+          "when": "editorIsOpen"
+        },
+        {
+          "command": "aiInstructionSecurity.openSettings",
+          "when": "editorIsOpen"
+        },
+        {
+          "command": "aiInstructionSecurity.manageCustomPatterns",
+          "when": "editorIsOpen"
+        }
+      ]
+    },
     "configuration": {
       "type": "object",
       "title": "AI Instruction Security",

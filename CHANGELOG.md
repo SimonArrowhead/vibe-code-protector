@@ -39,3 +39,9 @@
 - Corrected extension namespace from 'aiInstructionSecurity' to 'vibeCodeProtector'
 - Improved file detection and scanning reliability
 - Better handling of configuration changes
+
+## [0.2.1] - 2025-04-20
+### Fixed
+- Removed excessive debug output from console logs
+- Cleaned up file monitoring service output for better production experience
+- Kept essential error reporting while eliminating verbose messages

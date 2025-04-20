@@ -7,10 +7,8 @@ const { FileMonitorService } = require('./services/fileMonitorService');
 const diagnosticCollection = vscode.languages.createDiagnosticCollection('vibeCodeProtector');
 
 function activate(context) {
-  // Create dedicated output channel for monitoring activity
+  // Create output channel for errors (hidden by default)
   const monitorOutput = vscode.window.createOutputChannel('VCP Monitor');
-  monitorOutput.show();
-  monitorOutput.appendLine('Vibe Code Protector activated');
   
   context.subscriptions.push(diagnosticCollection);
   
@@ -20,7 +18,6 @@ function activate(context) {
   
   // Force an immediate scan of all monitored files after a short delay
   setTimeout(() => {
-    monitorOutput.appendLine("Running initial scan of monitored files...");
     fileMonitorService.updateMonitoredFiles();
   }, 2000);
   

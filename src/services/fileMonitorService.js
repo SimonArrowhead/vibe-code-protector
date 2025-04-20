@@ -18,7 +18,6 @@ class FileMonitorService {
    * Initialize the file monitor service
    */
   initialize() {
-    this.outputChannel.appendLine('FileMonitorService initialized');
     // Listen for configuration changes
     this.configListener = vscode.workspace.onDidChangeConfiguration(e => {
       if (e.affectsConfiguration('vibeCodeProtector.monitoredFiles')) {
@@ -34,8 +33,6 @@ class FileMonitorService {
    * Update the list of monitored files based on configuration
    */
   updateMonitoredFiles() {
-    this.outputChannel.appendLine('Updating monitored files');
-    
     // Clear existing watchers
     this.disposeFileWatchers();
     
@@ -45,24 +42,18 @@ class FileMonitorService {
     // Use a separate setting name instead of trying to nest under monitoredFiles
     const enabled = config.get('monitoredFilesEnabled');
     
-    this.outputChannel.appendLine(`File monitoring enabled: ${enabled}`);
-    
     if (enabled === false) {
-      this.outputChannel.appendLine('File monitoring is disabled in settings, skipping...');
       return;
     }
     
     // Get monitored files list
     const monitoredFiles = config.get('monitoredFiles') || ['.github/copilot-instructions.md'];
-    this.outputChannel.appendLine(`Monitored files: ${JSON.stringify(monitoredFiles)}`);
     
     // Create watchers for each workspace
     if (vscode.workspace.workspaceFolders) {
       vscode.workspace.workspaceFolders.forEach(folder => {
-        this.outputChannel.appendLine(`Checking workspace folder: ${folder.uri.fsPath}`);
         monitoredFiles.forEach(relativeFilePath => {
           if (!path.isAbsolute(relativeFilePath)) {
-            this.outputChannel.appendLine(`Setting up monitor for: ${relativeFilePath}`);
             this.monitorFile(folder.uri, relativeFilePath);
           }
         });
@@ -74,7 +65,6 @@ class FileMonitorService {
     // Also check for absolute paths
     monitoredFiles.forEach(filePath => {
       if (path.isAbsolute(filePath)) {
-        this.outputChannel.appendLine(`Setting up monitor for absolute path: ${filePath}`);
         this.monitorAbsoluteFilePath(filePath);
       }
     });
@@ -111,7 +101,6 @@ class FileMonitorService {
     try {
       // Create full URI from the file path
       const fileUri = vscode.Uri.file(absolutePath);
-      this.outputChannel.appendLine(`Setting up URI for absolute path: ${fileUri.fsPath}`);
       
       // Create a more specific watcher
       const fileWatcher = vscode.workspace.createFileSystemWatcher(fileUri.fsPath);
@@ -125,7 +114,6 @@ class FileMonitorService {
       this.fileWatchers.set(fileUri.toString(), fileWatcher);
       
       // Immediate scan
-      this.outputChannel.appendLine(`Scanning file: ${absolutePath}`);
       vscode.workspace.fs.stat(fileUri).then(
         () => this.scanMonitoredFile(fileUri),
         (err) => this.outputChannel.appendLine(`Monitored file not found: ${absolutePath}`)
@@ -181,14 +169,11 @@ class FileMonitorService {
    */
   async scanMonitoredFile(uri, focusEditor = false) {
     try {
-      this.outputChannel.appendLine(`Scanning monitored file: ${uri.fsPath}`);
-      
       // Open document and scan
       const document = await vscode.workspace.openTextDocument(uri);
       
       // Force a thorough scan regardless of file type
       const scanResult = scanDocument(document, this.diagnosticCollection);
-      this.outputChannel.appendLine(`Scan completed. Found ${scanResult.length} issues.`);
       
       // Show notification if issues are found
       if (scanResult.length > 0) {

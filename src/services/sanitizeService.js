@@ -51,7 +51,8 @@ async function sanitizeDocument(editor, diagnosticCollection) {
 
   // Rescan the document after sanitization with the provided collection
   if (diagnosticCollection) {
-    scanDocument(editor.document, diagnosticCollection);
+    const { scanDocument } = require('./scanService');
+    scanDocument(editor.document, diagnosticCollection, true);
   }
 
   if (text !== sanitized) {

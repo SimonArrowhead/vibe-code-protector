@@ -2,7 +2,7 @@ const vscode = require('vscode');
 const PATTERNS = require('../utils/patterns');
 const { createDiagnostic, updateDiagnostics } = require('../utils/diagnostics');
 
-function scanDocument(document, diagnosticCollection) {
+function scanDocument(document, diagnosticCollection, afterSanitization = false) {
   const config = vscode.workspace.getConfiguration('aiInstructionSecurity');
   const text = document.getText();
   const diagnostics = [];
@@ -117,6 +117,12 @@ function scanDocument(document, diagnosticCollection) {
   }
 
   updateDiagnostics(diagnosticCollection, document, diagnostics);
+  
+  // Add message when no issues are found, but only if not after sanitization
+  if (diagnostics.length === 0 && !afterSanitization) {
+    vscode.window.showInformationMessage('Vibe Code Protector: No security issues detected in this document.');
+  }
+  
   return diagnostics;
 }
 

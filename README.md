@@ -23,6 +23,11 @@ Vibe Code Protector is a Visual Studio Code extension designed to enhance the se
   - Custom file path monitoring (relative or absolute paths)
   - Real-time scanning when monitored files change
   - Notifications for security issues in monitored files
+- **File Ignore System**:
+  - Exclude specific files from being scanned
+  - Ignore entire folders from scanning
+  - Use glob patterns for more advanced ignore rules
+  - Quickly ignore the current file with a single command
 
 ## Feedback and Notifications
 The extension provides helpful feedback throughout your workflow:
@@ -48,6 +53,8 @@ Access these commands via the Command Palette (Ctrl+Shift+P):
 - `VCP: Manage Custom Patterns` - Add/remove custom prompt injection patterns
 - `VCP: Configure Monitored Files` - Add/remove files to monitor for security issues
 - `VCP: View Monitored Files Settings` - Opens settings focused on monitored files
+- `VCP: Ignore Current File` - Exclude current file from security scanning
+- `VCP: Manage Ignored Files` - Add/remove files and folders to ignore
 - `VCP: Open Settings` - Configure extension settings
 
 ### Context Menu
@@ -55,6 +62,7 @@ Right-click in the editor to access:
 - Scan for Security Issues
 - Sanitize Document
 - Selective Sanitize
+- Ignore Current File
 
 These commands appear in their own "Vibe Code Protector" section in the context menu.
 
@@ -77,6 +85,14 @@ These commands appear in their own "Vibe Code Protector" section in the context 
   "vibeCodeProtector.monitoredFiles": [".github/copilot-instructions.md"],
   "vibeCodeProtector.monitoredFilesEnabled": true,
   "vibeCodeProtector.monitoredFilesNotifications": true
+}
+```
+### Ignore File Settings
+```json
+{
+  "vibeCodeProtector.ignoredFiles": ["path/to/file.md"],
+  "vibeCodeProtector.ignoredFolders": ["node_modules"],
+  "vibeCodeProtector.ignoreGlobPatterns": ["**/*.min.js", "**/dist/**"]
 }
 ```
 

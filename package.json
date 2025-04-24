@@ -2,7 +2,7 @@
   "name": "vibe-code-protector",
   "displayName": "Vibe Code Protector",
   "description": "Protect your AI instruction files from security vulnerabilities like prompt injection, zero-width characters, and Unicode exploits. Features automatic scanning, sanitization, and critical file monitoring.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "publisher": "SimonArrowhead",
   "repository": {
     "type": "git",

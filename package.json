@@ -49,6 +49,14 @@
       {
         "command": "vibeCodeProtector.openMonitoredFilesSettings",
         "title": "VCP: View Monitored Files Settings"
+      },
+      {
+        "command": "vibeCodeProtector.ignoreSelectedFile",
+        "title": "VCP: Ignore Current File"
+      },
+      {
+        "command": "vibeCodeProtector.manageIgnoredFiles",
+        "title": "VCP: Manage Ignored Files & Folders"
       }
     ],
     "menus": {
@@ -67,6 +75,11 @@
           "when": "editorFocus",
           "command": "vibeCodeProtector.selectiveSanitize",
           "group": "VibeCodeProtector@3"
+        },
+        {
+          "when": "editorFocus",
+          "command": "vibeCodeProtector.ignoreSelectedFile",
+          "group": "VibeCodeProtector@4"
         }
       ],
       "commandPalette": [
@@ -92,6 +105,14 @@
         },
         {
           "command": "vibeCodeProtector.openMonitoredFilesSettings",
+          "when": "true"
+        },
+        {
+          "command": "vibeCodeProtector.ignoreSelectedFile",
+          "when": "editorIsOpen"
+        },
+        {
+          "command": "vibeCodeProtector.manageIgnoredFiles",
           "when": "true"
         }
       ]
@@ -174,6 +195,30 @@
           "type": "boolean",
           "default": true,
           "description": "Show notifications when monitored files are modified."
+        },
+        "vibeCodeProtector.ignoredFiles": {
+          "type": "array",
+          "default": [],
+          "description": "List of files to ignore when scanning for security issues.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vibeCodeProtector.ignoredFolders": {
+          "type": "array",
+          "default": [],
+          "description": "List of folders to ignore when scanning for security issues.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vibeCodeProtector.ignoreGlobPatterns": {
+          "type": "array",
+          "default": [],
+          "description": "Glob patterns for files to ignore (e.g., '**/.git/**').",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }
@@ -189,7 +234,9 @@
     "typescript": "^4.4.3",
     "vscode-test": "^1.6.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "minimatch": "^3.0.4"
+  },
   "keywords": [
     "security",
     "ai",

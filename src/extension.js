@@ -3,6 +3,7 @@ const { scanDocument } = require('./services/scanService');
 const { sanitizeDocument, sanitizeDocumentWithOptions } = require('./services/sanitizeService');
 const { isAiInstructionFile } = require('./utils/fileDetection');
 const { FileMonitorService } = require('./services/fileMonitorService');
+const { shouldIgnoreFile } = require('./utils/ignoreUtils');
 
 const diagnosticCollection = vscode.languages.createDiagnosticCollection('vibeCodeProtector');
 
@@ -213,7 +214,9 @@ function activate(context) {
     vscode.workspace.onDidOpenTextDocument(document => {
       try {
         const config = vscode.workspace.getConfiguration('vibeCodeProtector');
-        if (config.get('autoScan') && isAiInstructionFile(document.fileName)) {
+        if (config.get('autoScan') && 
+            isAiInstructionFile(document.fileName) && 
+            !shouldIgnoreFile(document.fileName)) {
           scanDocument(document, diagnosticCollection);
         }
       } catch (error) {
@@ -233,7 +236,9 @@ function activate(context) {
     vscode.workspace.onDidSaveTextDocument(document => {
       try {
         const config = vscode.workspace.getConfiguration('vibeCodeProtector');
-        if (config.get('autoScan') && isAiInstructionFile(document.fileName)) {
+        if (config.get('autoScan') && 
+            isAiInstructionFile(document.fileName) && 
+            !shouldIgnoreFile(document.fileName)) {
           scanDocument(document, diagnosticCollection);
         }
       } catch (error) {
@@ -241,6 +246,135 @@ function activate(context) {
       }
     })
   );
+
+  const ignoreSelectedFileCommand = vscode.commands.registerCommand(
+    'vibeCodeProtector.ignoreSelectedFile',
+    async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showWarningMessage('No active file to ignore.');
+        return;
+      }
+
+      const config = vscode.workspace.getConfiguration('vibeCodeProtector');
+      const ignoredFiles = config.get('ignoredFiles') || [];
+      
+      // Get relative path if possible, or fall back to full path
+      const filePath = vscode.workspace.asRelativePath(editor.document.uri);
+      
+      if (ignoredFiles.includes(filePath)) {
+        vscode.window.showInformationMessage(`File ${filePath} is already ignored.`);
+        return;
+      }
+      
+      // Add to ignored files list
+      ignoredFiles.push(filePath);
+      await config.update('ignoredFiles', ignoredFiles, vscode.ConfigurationTarget.Global);
+      
+      // Clear any existing diagnostics for this file
+      diagnosticCollection.delete(editor.document.uri);
+      
+      vscode.window.showInformationMessage(`Added ${filePath} to ignored files list.`);
+    }
+  );
+
+  context.subscriptions.push(ignoreSelectedFileCommand);
+
+  const manageIgnoredFilesCommand = vscode.commands.registerCommand(
+    'vibeCodeProtector.manageIgnoredFiles',
+    async () => {
+      const config = vscode.workspace.getConfiguration('vibeCodeProtector');
+      let ignoredFiles = config.get('ignoredFiles') || [];
+      let ignoredFolders = config.get('ignoredFolders') || [];
+      let ignoreGlobPatterns = config.get('ignoreGlobPatterns') || [];
+      
+      // Create quick pick items for all ignored patterns
+      const quickPickItems = [
+        { label: '➕ Add Ignored File', description: 'Add a file to ignore list' },
+        { label: '➕ Add Ignored Folder', description: 'Add a folder to ignore list' },
+        { label: '➕ Add Ignore Glob Pattern', description: 'Add a glob pattern (e.g., **/.git/**)' },
+        { kind: vscode.QuickPickItemKind.Separator, label: 'Ignored Files' },
+        ...ignoredFiles.map(file => ({ 
+          label: `🗋 ${file}`, 
+          description: 'Click to remove from ignore list',
+        })),
+        { kind: vscode.QuickPickItemKind.Separator, label: 'Ignored Folders' },
+        ...ignoredFolders.map(folder => ({ 
+          label: `📁 ${folder}`, 
+          description: 'Click to remove from ignore list',
+        })),
+        { kind: vscode.QuickPickItemKind.Separator, label: 'Ignore Glob Patterns' },
+        ...ignoreGlobPatterns.map(pattern => ({ 
+          label: `🔣 ${pattern}`, 
+          description: 'Click to remove from ignore list',
+        }))
+      ];
+      
+      const selected = await vscode.window.showQuickPick(quickPickItems, {
+        placeHolder: 'Manage ignored files and folders',
+        matchOnDescription: true
+      });
+      
+      if (!selected) return;
+      
+      if (selected.label === '➕ Add Ignored File') {
+        const filePath = await vscode.window.showInputBox({
+          placeHolder: 'path/to/file.md or C:\\path\\to\\file.md',
+          prompt: 'Enter a file path to ignore'
+        });
+        
+        if (filePath) {
+          ignoredFiles.push(filePath);
+          await config.update('ignoredFiles', ignoredFiles, vscode.ConfigurationTarget.Global);
+          vscode.window.showInformationMessage(`Added ${filePath} to ignored files list.`);
+        }
+      } 
+      else if (selected.label === '➕ Add Ignored Folder') {
+        const folderPath = await vscode.window.showInputBox({
+          placeHolder: 'path/to/folder or C:\\path\\to\\folder',
+          prompt: 'Enter a folder path to ignore'
+        });
+        
+        if (folderPath) {
+          ignoredFolders.push(folderPath);
+          await config.update('ignoredFolders', ignoredFolders, vscode.ConfigurationTarget.Global);
+          vscode.window.showInformationMessage(`Added ${folderPath} to ignored folders list.`);
+        }
+      }
+      else if (selected.label === '➕ Add Ignore Glob Pattern') {
+        const pattern = await vscode.window.showInputBox({
+          placeHolder: '**/.git/** or **/*.min.js',
+          prompt: 'Enter a glob pattern to ignore'
+        });
+        
+        if (pattern) {
+          ignoreGlobPatterns.push(pattern);
+          await config.update('ignoreGlobPatterns', ignoreGlobPatterns, vscode.ConfigurationTarget.Global);
+          vscode.window.showInformationMessage(`Added ${pattern} to ignore glob patterns.`);
+        }
+      }
+      else if (selected.label.startsWith('🗋 ')) {
+        const fileToRemove = selected.label.substring(2);
+        ignoredFiles = ignoredFiles.filter(f => f !== fileToRemove);
+        await config.update('ignoredFiles', ignoredFiles, vscode.ConfigurationTarget.Global);
+        vscode.window.showInformationMessage(`Removed ${fileToRemove} from ignored files list.`);
+      }
+      else if (selected.label.startsWith('📁 ')) {
+        const folderToRemove = selected.label.substring(2);
+        ignoredFolders = ignoredFolders.filter(f => f !== folderToRemove);
+        await config.update('ignoredFolders', ignoredFolders, vscode.ConfigurationTarget.Global);
+        vscode.window.showInformationMessage(`Removed ${folderToRemove} from ignored folders list.`);
+      }
+      else if (selected.label.startsWith('🔣 ')) {
+        const patternToRemove = selected.label.substring(2);
+        ignoreGlobPatterns = ignoreGlobPatterns.filter(p => p !== patternToRemove);
+        await config.update('ignoreGlobPatterns', ignoreGlobPatterns, vscode.ConfigurationTarget.Global);
+        vscode.window.showInformationMessage(`Removed ${patternToRemove} from ignore glob patterns.`);
+      }
+    }
+  );
+
+  context.subscriptions.push(manageIgnoredFilesCommand);
 }
 
 function deactivate() {

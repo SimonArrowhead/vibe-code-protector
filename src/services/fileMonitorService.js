@@ -1,6 +1,7 @@
 const vscode = require('vscode');
 const path = require('path');
 const { scanDocument } = require('./scanService');
+const { shouldIgnoreFile } = require('../utils/ignoreUtils');
 
 /**
  * Monitors specific files for changes and security issues
@@ -169,6 +170,12 @@ class FileMonitorService {
    */
   async scanMonitoredFile(uri, focusEditor = false) {
     try {
+      // Skip ignored files
+      if (shouldIgnoreFile(uri.fsPath)) {
+        this.outputChannel.appendLine(`Skipping ignored file: ${uri.fsPath}`);
+        return;
+      }
+      
       // Open document and scan
       const document = await vscode.workspace.openTextDocument(uri);
       
